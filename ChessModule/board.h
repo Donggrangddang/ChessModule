@@ -5,9 +5,12 @@
 
 typedef struct {
     short square[BOARD_SIZE];
-    short turnToPlay;
+    short turnToPlay; // 1Àº ¹éÀÌ ÇÒ Â÷·Ê, 0Àº ÈæÀÌ ÇÒ Â÷·Ê
 } Board;
 
 void initializeBoard(Board* b);
 
+char getPieceSymbol(int piece);
+
+void printBoard(Board* b);
 #endif

@@ -1,11 +1,14 @@
 #include "board.h"
 #include "piece.h"
-#include "move.h"
+#include <stdio.h>
 
-
+/**
+* @brief 보드 처음 상태로 초기화
+* @param Board* b 보드의 메모리 주소
+*/
 void initializeBoard(Board* b) {
 
-    b->turnToPlay = White;
+    b->turnToPlay = 1;
 
     for (int i = 0; i < BOARD_SIZE; i++) {
         b->square[i] = None;

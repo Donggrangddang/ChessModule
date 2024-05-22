@@ -1,6 +1,5 @@
 #include "piece.h"
-#include "board.h"
-#include "move.h"
+
 
 
 int isColor(int piece, int color) {

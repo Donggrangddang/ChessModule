@@ -128,12 +128,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="board.h" />
+    <ClInclude Include="interface.h" />
+    <ClInclude Include="legalMove.h" />
     <ClInclude Include="move.h" />
     <ClInclude Include="piece.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="board.c" />
+    <ClCompile Include="interface.c" />
     <ClCompile Include="main.c" />
+    <ClCompile Include="legalMove.c" />
     <ClCompile Include="move.c" />
     <ClCompile Include="piece.c" />
   </ItemGroup>
