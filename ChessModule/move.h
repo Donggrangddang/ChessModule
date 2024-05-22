@@ -1,4 +1,5 @@
 #include "board.h"
+#include "piece.h"
 
 #ifndef move_h
 #define move_h
@@ -18,4 +19,17 @@ typedef struct {
 	int size;
 } MoveList;
 
+void addLegalMove(MoveList* list, Move move);
+
+void initMove(Move* m, int startSquare, int targetSquare);
+
+MoveList generateLegalMoves(Board* b);
+
+void generateSlidingMoves(int startSquare, MoveList* l, Board* b);
+
+void generateStraightMoves(int startSquare, MoveList* l, Board* b);
+
+void generateKnightMoves(int startSquare, MoveList* l, Board* b);
+
+void generateKingMoves(int startSquare, MoveList* l, Board* b);
 #endif

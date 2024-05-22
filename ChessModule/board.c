@@ -1,8 +1,9 @@
 #include "board.h"
 #include "piece.h"
+#include "move.h"
 
 
-void initializeBoard(Board *b) {
+void initializeBoard(Board* b) {
 
     b->turnToPlay = White;
 

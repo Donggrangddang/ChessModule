@@ -1,4 +1,6 @@
 #include "piece.h"
+#include "board.h"
+#include "move.h"
 
 
 int isColor(int piece, int color) {
@@ -24,6 +26,13 @@ int isStraightPiece(int piece) {
 
 int isKnight(int piece) {
 	if (piece == Knight) {
+		return TRUE;
+	}
+	return FALSE;
+}
+
+int isKing(int piece) {
+	if (piece == King) {
 		return TRUE;
 	}
 	return FALSE;

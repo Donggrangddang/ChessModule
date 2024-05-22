@@ -8,6 +8,6 @@ typedef struct {
     short turnToPlay;
 } Board;
 
-void initializeBoard(struct Board* b);
+void initializeBoard(Board* b);
 
 #endif

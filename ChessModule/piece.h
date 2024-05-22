@@ -22,4 +22,6 @@ int isSlidingPiece(int piece);
 int isStraightPiece(int piece);
 
 int isKnight(int piece);
+
+int isKing(int piece);
 #endif

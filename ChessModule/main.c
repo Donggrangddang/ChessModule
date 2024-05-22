@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "piece.h"
 #include "board.h"
+#include "move.h"
 
 int main() {
     // make board
