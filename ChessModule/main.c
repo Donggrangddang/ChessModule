@@ -1,17 +1,20 @@
-#include <stdio.h>
 #include "board.h"
-#include "interface.h"
 #include "move.h"
+#include "legalMove.h"
 int main() {
     Board board;
 
-    initializeBoard(&board);
+    initializeBoard(&board);    
 
     while (1) {
         printBoard(&board);
-        MoveList moveList = generateLegalMoves(&board);
-        char san = getSAN();
-        applyMove(&board, &moveList, paresSAN(&san));
+        MoveList moveList = { 0, 0 };
+        moveList = generateLegalMoves(&board);
+        char san;
+        getSAN(&san);
+        if (san != '\0') {
+           applyMove(&board, &moveList, paresSAN(&san));
+        }
     }
     
 

@@ -3,7 +3,9 @@
 #ifndef move_h
 #define move_h
 
-char getSAN();
+void clearInputBuffer();
+
+char getSAN(char* buffer);
 
 int convertToIndex(char file, char rank);
 

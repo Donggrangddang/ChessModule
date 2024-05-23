@@ -7,11 +7,11 @@
 #define MAX_SIZE 100
 
 extern const int DirectionOffsets[8];
-extern const int KnightDirectionOffsets[8];
+extern const int KnightDirectionOffsets[8][2];
 
 typedef struct {
-	int startSquare; // readonly
-	int targetSquare; // readonly
+	short startSquare; // readonly
+	short targetSquare; // readonly
 } Move;
 
 typedef struct {
@@ -32,4 +32,8 @@ void generateStraightMoves(int startSquare, MoveList* l, Board* b);
 void generateKnightMoves(int startSquare, MoveList* l, Board* b);
 
 void generateKingMoves(int startSquare, MoveList* l, Board* b);
+
+void generatePawnMoves(int startSquare, MoveList* l, Board* b);
+
+void printMoveList(MoveList* moveList);
 #endif

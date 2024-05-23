@@ -10,7 +10,7 @@
 */
 char getPieceSymbol(int piece) {
     switch (piece & 7) {
-    case King: return (piece & White) ? 'K' : 'k';
+    case King: return (piece & White) ? 'K' : 'k';  
     case Pawn: return (piece & White) ? 'P' : 'p';
     case Knight: return (piece & White) ? 'N' : 'n';
     case Bishop: return (piece & White) ? 'B' : 'b';

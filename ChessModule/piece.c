@@ -3,35 +3,43 @@
 
 
 int isColor(int piece, int color) {
-	if ((piece & color) != 0) {
-		return TRUE;
+	if (color == 1) {
+		isColor(piece, White);
 	}
-	return FALSE;
+	else if (color == 0) {
+		isColor(piece, Black);
+	}
+	else {
+		if ((piece & color) != 0) {
+			return TRUE;
+		}
+		return FALSE;
+	}
 }
 
 int isSlidingPiece(int piece) {
-	if (piece == Bishop || piece == Queen) {
+	if ((piece == (White | Queen)) || (piece == (Black | Queen)) || (piece == (White | Bishop)) || (piece == (Black | Bishop))) {
 		return TRUE;
 	}
 	return FALSE;
 }
 
 int isStraightPiece(int piece) {
-	if (piece == Rook || piece == Queen) {
+	if ((piece == (White | Queen)) || (piece == (Black | Queen)) || (piece == (White | Rook)) || (piece == (Black | Rook))) {
 		return TRUE;
 	}
 	return FALSE;
 }
 
 int isKnight(int piece) {
-	if (piece == Knight) {
+	if ((piece == (White | Knight)) || (piece == (Black | Knight))) {
 		return TRUE;
 	}
 	return FALSE;
 }
 
 int isKing(int piece) {
-	if (piece == King) {
+	if ((piece == (White | King)) || (piece == (Black | King))) {
 		return TRUE;
 	}
 	return FALSE;
