@@ -208,13 +208,3 @@ void generatePawnMoves(int startSquare, MoveList* l, Board* b) {
 		}
 	}
 }
-
-void printMoveList(MoveList* moveList) {
-	for (int i = 0; i < moveList->size; i++) {
-		short first = moveList->movesList[i].startSquare;
-		short second = moveList->movesList[i].targetSquare;
-		printf("[");
-		printf("%d, %d", first, second);
-		printf("],");
-	}
-}

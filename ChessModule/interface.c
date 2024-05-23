@@ -1,5 +1,7 @@
-﻿#include "piece.h"
+﻿#define _CRT_SECURE_NO_WARNINGS
+#include "piece.h"
 #include "board.h"
+#include "legalMove.h"
 #include <stdio.h>
 
 
@@ -33,4 +35,33 @@ void printBoard(Board * b) {
         }
         printf("\n");
     }
+}
+
+void printMoveList(MoveList* moveList) {
+    for (int i = 0; i < moveList->size; i++) {
+        short first = moveList->movesList[i].startSquare;
+        short second = moveList->movesList[i].targetSquare;
+        printf("[");
+        printf("%d, %d", first, second);
+        printf("],");
+    }
+}
+
+void getSAN(char* buffer) {
+    printf("Enter your Move: ");
+
+    if (scanf("%4s", buffer) != 1) { // 최대 4글자 입력
+        printf("Failed to read input.\n");
+        buffer[0] = '\0'; // 실패 시 빈 문자열 반환
+    }
+
+    // 입력 버퍼 지우기
+    int ch;
+    while ((ch = getchar()) != '\n' && ch != EOF);
+}
+
+
+Move paresSAN(char* san) {
+    Move move = { convertToIndex(san[0], san[1]), convertToIndex(san[2], san[3]) };
+    return move;
 }

@@ -34,6 +34,4 @@ void generateKnightMoves(int startSquare, MoveList* l, Board* b);
 void generateKingMoves(int startSquare, MoveList* l, Board* b);
 
 void generatePawnMoves(int startSquare, MoveList* l, Board* b);
-
-void printMoveList(MoveList* moveList);
 #endif

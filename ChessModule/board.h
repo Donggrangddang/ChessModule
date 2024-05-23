@@ -9,8 +9,4 @@ typedef struct {
 } Board;
 
 void initializeBoard(Board* b);
-
-char getPieceSymbol(int piece);
-
-void printBoard(Board* b);
 #endif

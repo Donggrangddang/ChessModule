@@ -10,10 +10,7 @@ int isColor(int piece, int color) {
 		isColor(piece, Black);
 	}
 	else {
-		if ((piece & color) != 0) {
-			return TRUE;
-		}
-		return FALSE;
+		return (piece & color) != 0;
 	}
 }
 

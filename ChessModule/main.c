@@ -1,6 +1,7 @@
 #include "board.h"
 #include "move.h"
 #include "legalMove.h"
+#include "interface.h"
 int main() {
     Board board;
 
