@@ -37,6 +37,10 @@ void printBoard(Board * b) {
     }
 }
 
+/**
+* @brief MoveList List처럼 보이게 출력
+* @param MoveList* moveList 출력할 MoveList의 메모리 주소
+*/
 void printMoveList(MoveList* moveList) {
     for (int i = 0; i < moveList->size; i++) {
         short first = moveList->movesList[i].startSquare;
@@ -47,6 +51,10 @@ void printMoveList(MoveList* moveList) {
     }
 }
 
+/**
+* @brief 움직임을 입력받는 함수
+* @param Char* buffer 움직임을 저장할 메모리 주소
+*/
 void getSAN(char* buffer) {
     printf("Enter your Move: ");
 
@@ -60,7 +68,11 @@ void getSAN(char* buffer) {
     while ((ch = getchar()) != '\n' && ch != EOF);
 }
 
-
+/**
+* @brief 움직임을 쪼개 bitBoard에 맞는 형식으로 바꿔주는 함수
+* @param char* san 변환시킬 움직임의 메모리 주소
+* @return Move move 변환된 움직임
+*/
 Move paresSAN(char* san) {
     Move move = { convertToIndex(san[0], san[1]), convertToIndex(san[2], san[3]) };
     return move;

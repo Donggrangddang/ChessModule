@@ -19,11 +19,6 @@ void addLegalMove(MoveList* list, Move move) {
 	list->movesList[list->size++] = move;
 };
 
-void initMove(Move* m, int startSquare, int targetSquare) {
-	m->startSquare = startSquare;
-	m->targetSquare = targetSquare;
-}
-
 /**
 * @brief 가능한 모든 움직임을 만드는 함수
 * @param Board* b Board의 메모리 주소
@@ -146,11 +141,11 @@ void generateKnightMoves(int startSquare, MoveList* l, Board* b) {
 }
 
 /**
-* @brief 킹의 움직임을 만들어 주는 함수(체크 고려)
+* @brief 킹의 움직임을 만들어 주는 함수(체크 고려 x)
 * @param int startSquare : 움직일 기물이 위치한 Square
 * @param Movelist *l : 이 움직임을 추가할 Movelist의 메모리 주소
 * @param Board *b : 움직일 기물을 찾을 Board의 메모리 주소
-*20250517
+*20240525
 */
 void generateKingMoves(int startSquare, MoveList* l, Board* b) {
 	// 체크 받는 곳은 움직일 수 없게 설정해야함
@@ -176,6 +171,13 @@ void generateKingMoves(int startSquare, MoveList* l, Board* b) {
 	}
 }
 
+/**
+* @brief 폰의 움직임을 만들어 주는 함수
+* @param int startSquare : 움직일 기물이 위치한 Square
+* @param Movelist *l : 이 움직임을 추가할 Movelist의 메모리 주소
+* @param Board *b : 움직일 기물을 찾을 Board의 메모리 주소
+* 20240525
+*/
 void generatePawnMoves(int startSquare, MoveList* l, Board* b) {
 	// 폰이 전진할 수 있는지 확인
 	if (b->square[startSquare - 8 + 16 * b->turnToPlay] == None) {

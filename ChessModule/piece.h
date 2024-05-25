@@ -25,3 +25,5 @@ int isKnight(int piece);
 
 int isKing(int piece);
 #endif
+
+
