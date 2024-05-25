@@ -24,7 +24,7 @@ void addLegalMove(MoveList* list, Move move) {
 * @param Board* b Board의 메모리 주소
 * @return Movelist 가능한 움직임의 총 합
 */
-MoveList generateLegalMoves(Board* b) {
+MoveList generateLegalMoves(Board* b, MoveList lastMoveList) {
 
 	Move move = { 0, 0 };
 	MoveList legalMoveList = {move, 0};
@@ -42,7 +42,7 @@ MoveList generateLegalMoves(Board* b) {
 				if (isStraightPiece(piece)) { // 룩, 퀸
 					generateStraightMoves(startSquare, &legalMoveList, b);
 				}
-				if (isSlidingPiece(piece)) { // 비숍, 퀸
+				else if (isSlidingPiece(piece)) { // 비숍, 퀸
 					generateSlidingMoves(startSquare, &legalMoveList, b);
 				}
 				else { // 폰
@@ -147,7 +147,7 @@ void generateKnightMoves(int startSquare, MoveList* l, Board* b) {
 * @param Board *b : 움직일 기물을 찾을 Board의 메모리 주소
 *20240525
 */
-void generateKingMoves(int startSquare, MoveList* l, Board* b) {
+void generateKingMoves(int startSquare, MoveList* l, Board* b, MoveList lastMoveList) {
 	// 체크 받는 곳은 움직일 수 없게 설정해야함
 
 	for (int i = 0; i < 8; i++) {
@@ -156,12 +156,16 @@ void generateKingMoves(int startSquare, MoveList* l, Board* b) {
 		if (targetSquare >= 0 && targetSquare < BOARD_SIZE) {
 			// 체크 당하면 이라는 조건을 추가해야함
 			if (b->square[targetSquare] == None) { // 갈 수 있는 칸이 비었다
-				Move move = {startSquare, targetSquare};
-				addLegalMove(l, move);
+				if (!IsCheck(b, lastMoveList)) { // 체크 당하지 않았다면
+					Move move = { startSquare, targetSquare };
+					addLegalMove(l, move);
+				}
 			}
 			else if (isColor(b->square[targetSquare], b->turnToPlay) == FALSE) { // 갈 수 있는 칸에 상대 기물이 있다
-				Move move = {startSquare, targetSquare};
-				addLegalMove(l, move);
+				if (!IsCheck(b, lastMoveList)) { // 체크 당하지 않았다면
+					Move move = { startSquare, targetSquare };
+					addLegalMove(l, move);
+				}
 			}
 			else
 			{
@@ -209,4 +213,28 @@ void generatePawnMoves(int startSquare, MoveList* l, Board* b) {
 			addLegalMove(l, move);
 		}
 	}
+}
+
+/**
+* @brief 체크 여부를 알려주는 함수(끝날 때 사용해서 다음 수에 체크인지 아닌지 알려줌)
+* @param MoveList* l : 상대편이 움직일 수 있는 곳인지 알아낼 MoveList의 메모리 주소
+* @param Board* b : Board의 메모리 주소
+* @return int 체크 여부 (일치 : TRUE, 불일치 : FALSE)
+*/
+int IsCheck(Board* b, MoveList lastMoveList) {
+
+	int kingSquare;
+
+	for (int i = 0; i < BOARD_SIZE; i++) { // 내 킹 찾기
+		if (isKing(b->square[i])) {
+			if (isColor(b->square[i], (b->turnToPlay))) {
+				kingSquare = i;
+			}
+		}
+	}
+	for (int i = 0; i < lastMoveList.size; i++) {
+		if (lastMoveList.movesList[i].targetSquare == kingSquare)
+			return TRUE;
+	}
+	return FALSE;
 }

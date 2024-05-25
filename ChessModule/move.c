@@ -14,7 +14,7 @@ short convertToIndex(char file, char rank) {
 }
 
 /**
-* @brief Board에 움직임을 반영하는 함수
+* @brief Board에 움직임을 반영하는 함수 (turnToPlay 바꾸는 걸 main.c로 뺌)
 * @param Board* b 움직임을 반영할 Board의 메모리 주소
 * @param MoveList* l 가능한 움직임인지 여부를 판단할 MoveList의 메모리 주소
 * @param Move move 취할 움직임
@@ -24,7 +24,6 @@ int applyMove(Board* b, MoveList* l, Move move) {
 		if (move.startSquare == l->movesList[i].startSquare && move.targetSquare == l->movesList[i].targetSquare) {
 			b->square[move.targetSquare] = b->square[move.startSquare];
 			b->square[move.startSquare] = None;
-			b->turnToPlay = !(b->turnToPlay);
 			return 0;
 		}
 	}

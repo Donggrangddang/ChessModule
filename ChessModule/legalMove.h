@@ -21,8 +21,6 @@ typedef struct {
 
 void addLegalMove(MoveList* list, Move move);
 
-void initMove(Move* m, int startSquare, int targetSquare);
-
 MoveList generateLegalMoves(Board* b);
 
 void generateSlidingMoves(int startSquare, MoveList* l, Board* b);
