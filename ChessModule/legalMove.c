@@ -24,7 +24,7 @@ void addLegalMove(MoveList* list, Move move) {
 * @param Board* b Board의 메모리 주소
 * @return Movelist 가능한 움직임의 총 합
 */
-MoveList generateLegalMoves(Board* b, MoveList lastMoveList) {
+MoveList generateLegalMoves(Board* b) {
 
 	Move move = { 0, 0 };
 	MoveList legalMoveList = {move, 0};
@@ -147,7 +147,7 @@ void generateKnightMoves(int startSquare, MoveList* l, Board* b) {
 * @param Board *b : 움직일 기물을 찾을 Board의 메모리 주소
 *20240525
 */
-void generateKingMoves(int startSquare, MoveList* l, Board* b, MoveList lastMoveList) {
+void generateKingMoves(int startSquare, MoveList* l, Board* b) {
 	// 체크 받는 곳은 움직일 수 없게 설정해야함
 
 	for (int i = 0; i < 8; i++) {
@@ -156,16 +156,12 @@ void generateKingMoves(int startSquare, MoveList* l, Board* b, MoveList lastMove
 		if (targetSquare >= 0 && targetSquare < BOARD_SIZE) {
 			// 체크 당하면 이라는 조건을 추가해야함
 			if (b->square[targetSquare] == None) { // 갈 수 있는 칸이 비었다
-				if (!IsCheck(b, lastMoveList)) { // 체크 당하지 않았다면
-					Move move = { startSquare, targetSquare };
-					addLegalMove(l, move);
-				}
+				Move move = { startSquare, targetSquare };
+				addLegalMove(l, move);
 			}
 			else if (isColor(b->square[targetSquare], b->turnToPlay) == FALSE) { // 갈 수 있는 칸에 상대 기물이 있다
-				if (!IsCheck(b, lastMoveList)) { // 체크 당하지 않았다면
-					Move move = { startSquare, targetSquare };
-					addLegalMove(l, move);
-				}
+				Move move = { startSquare, targetSquare };
+				addLegalMove(l, move);
 			}
 			else
 			{
