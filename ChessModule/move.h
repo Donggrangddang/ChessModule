@@ -5,5 +5,7 @@
 
 short convertToIndex(char file, char rank);
 
-void applyMove(Board* b, MoveList* l, Move move);
+int doMove(Board* b, MoveList* l, Move move);
+
+void undoMove(Board* b, Move lastMove);
 #endif

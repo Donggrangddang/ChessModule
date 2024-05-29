@@ -11,10 +11,11 @@ int main() {
         printBoard(&board);
         MoveList moveList = { 0, 0 };
         moveList = generateLegalMoves(&board);
+        printMoveList(&moveList);
         char san;
         getSAN(&san);
         if (san != '\0') {
-           applyMove(&board, &moveList, paresSAN(&san));
+           doMove(&board, &moveList, paresSAN(&san));
         }
     }
     

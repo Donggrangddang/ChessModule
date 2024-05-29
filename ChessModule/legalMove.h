@@ -23,6 +23,8 @@ void addLegalMove(MoveList* list, Move move);
 
 void initMove(Move* m, int startSquare, int targetSquare);
 
+int generateAttackMap(Board* b, int color);
+
 MoveList generateLegalMoves(Board* b);
 
 void generateSlidingMoves(int startSquare, MoveList* l, Board* b);
@@ -34,4 +36,8 @@ void generateKnightMoves(int startSquare, MoveList* l, Board* b);
 void generateKingMoves(int startSquare, MoveList* l, Board* b);
 
 void generatePawnMoves(int startSquare, MoveList* l, Board* b);
+
+int compareIntegers(const void* a, const void* b);
+
+int isChecked(Board* b, int* attackMap);
 #endif

@@ -8,7 +8,7 @@ short convertToIndex(char file, char rank) {
 	return (rank - '1') * 8 + (file - 'a');
 }
 
-int applyMove(Board* b, MoveList* l, Move move) {
+int doMove(Board* b, MoveList* l, Move move) {
 	for (int i = 0; i < l->size; i++) {
 		if (move.startSquare == l->movesList[i].startSquare && move.targetSquare == l->movesList[i].targetSquare) {
 			b->square[move.targetSquare] = b->square[move.startSquare];
@@ -20,4 +20,9 @@ int applyMove(Board* b, MoveList* l, Move move) {
 	printf("illegal move\n");
 	return 0;
 }
-// Path: ChessModule/piece.c
+
+void undoMove(Board* b, Move lastMove) {
+	b->square[lastMove.startSquare] = b->square[lastMove.targetSquare];
+	b->square[lastMove.targetSquare] = None;
+	b->turnToPlay = !(b->turnToPlay);
+}

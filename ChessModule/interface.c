@@ -37,6 +37,7 @@ void printBoard(Board * b) {
     }
 }
 
+
 void printMoveList(MoveList* moveList) {
     for (int i = 0; i < moveList->size; i++) {
         short first = moveList->movesList[i].startSquare;
@@ -45,6 +46,7 @@ void printMoveList(MoveList* moveList) {
         printf("%d, %d", first, second);
         printf("],");
     }
+    printf("\n");
 }
 
 void getSAN(char* buffer) {

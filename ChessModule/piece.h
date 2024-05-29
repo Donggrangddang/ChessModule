@@ -24,4 +24,6 @@ int isStraightPiece(int piece);
 int isKnight(int piece);
 
 int isKing(int piece);
+
+int isPawn(int piece);
 #endif

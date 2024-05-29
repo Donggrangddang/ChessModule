@@ -41,3 +41,10 @@ int isKing(int piece) {
 	}
 	return FALSE;
 }
+
+int isPawn(int piece) {
+	if ((piece == (White | Pawn)) || (piece == (Black | Pawn))) {
+		return TRUE;
+	}
+	return FALSE;
+}
