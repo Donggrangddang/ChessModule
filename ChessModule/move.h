@@ -3,7 +3,7 @@
 #ifndef move_h
 #define move_h
 
-short convertToIndex(char file, char rank);
+int convertToIndex(char file, char rank);
 
 int doMove(Board* b, MoveList* l, Move move);
 

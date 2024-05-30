@@ -10,8 +10,8 @@ extern const int DirectionOffsets[8];
 extern const int KnightDirectionOffsets[8][2];
 
 typedef struct {
-	short startSquare; // readonly
-	short targetSquare; // readonly
+	int startSquare; // readonly
+	int targetSquare; // readonly
 } Move;
 
 typedef struct {
@@ -23,19 +23,23 @@ void addLegalMove(MoveList* list, Move move);
 
 void initMove(Move* m, int startSquare, int targetSquare);
 
-int generateAttackMap(Board* b, int color);
+int* generateAttackMap(Board* b, int color);
 
 MoveList generateLegalMoves(Board* b);
 
-void generateSlidingMoves(int startSquare, MoveList* l, Board* b);
+void generateSlidingMoves(int startSquare, MoveList* l, Board* b, int color);
 
-void generateStraightMoves(int startSquare, MoveList* l, Board* b);
+void generateStraightMoves(int startSquare, MoveList* l, Board* b, int color);
 
-void generateKnightMoves(int startSquare, MoveList* l, Board* b);
+void generateKnightMoves(int startSquare, MoveList* l, Board* b, int color);
 
-void generateKingMoves(int startSquare, MoveList* l, Board* b);
+void generateKingMoves(int startSquare, MoveList* l, Board* b, int color, int* attackMap);
 
-void generatePawnMoves(int startSquare, MoveList* l, Board* b);
+void generateKingAttackMoves(int startSquare, MoveList* l, Board* b, int color);
+
+void generatePawnMoves(int startSquare, MoveList* l, Board* b, int color);
+
+void generatePawnAttackMoves(int startSquare, MoveList* l, Board* b, int color);
 
 int compareIntegers(const void* a, const void* b);
 

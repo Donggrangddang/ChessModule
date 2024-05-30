@@ -4,9 +4,11 @@
 #include "piece.h"
 #include <stdio.h>
 
-short convertToIndex(char file, char rank) {
+
+convertToIndex(char file, char rank) {
 	return (rank - '1') * 8 + (file - 'a');
 }
+
 
 int doMove(Board* b, MoveList* l, Move move) {
 	for (int i = 0; i < l->size; i++) {
@@ -20,6 +22,7 @@ int doMove(Board* b, MoveList* l, Move move) {
 	printf("illegal move\n");
 	return 0;
 }
+
 
 void undoMove(Board* b, Move lastMove) {
 	b->square[lastMove.startSquare] = b->square[lastMove.targetSquare];

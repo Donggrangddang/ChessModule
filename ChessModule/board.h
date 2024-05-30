@@ -4,8 +4,8 @@
 #define BOARD_SIZE 64
 
 typedef struct {
-    short square[BOARD_SIZE];
-    short turnToPlay; // 1은 백이 할 차례, 0은 흑이 할 차례
+    int square[BOARD_SIZE];
+    int turnToPlay; // 1은 백이 할 차례, 0은 흑이 할 차례
 } Board;
 
 void initializeBoard(Board* b);

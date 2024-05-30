@@ -40,14 +40,15 @@ void printBoard(Board * b) {
 
 void printMoveList(MoveList* moveList) {
     for (int i = 0; i < moveList->size; i++) {
-        short first = moveList->movesList[i].startSquare;
-        short second = moveList->movesList[i].targetSquare;
+        int first = moveList->movesList[i].startSquare;
+        int second = moveList->movesList[i].targetSquare;
         printf("[");
         printf("%d, %d", first, second);
         printf("],");
     }
     printf("\n");
 }
+
 
 void getSAN(char* buffer) {
     printf("Enter your Move: ");
