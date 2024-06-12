@@ -27,3 +27,5 @@ int isKing(int piece);
 
 int isPawn(int piece);
 #endif
+
+

@@ -241,11 +241,11 @@ void generateKnightMoves(int startSquare, MoveList* l, Board* b, int color) {
 }
 
 /**
-* @brief 킹의 움직임을 만들어 주는 함수(체크 고려)
+* @brief 킹의 움직임을 만들어 주는 함수(체크 고려 x)
 * @param int startSquare : 움직일 기물이 위치한 Square
 * @param Movelist *l : 이 움직임을 추가할 Movelist의 메모리 주소
 * @param Board *b : 움직일 기물을 찾을 Board의 메모리 주소
-*20250517
+*20240525
 */
 void generateKingMoves(int startSquare, MoveList* l, Board* b, int color, int* attackMap) {
 	for (int i = 0; i < 8; i++) {

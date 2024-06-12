@@ -63,7 +63,11 @@ void getSAN(char* buffer) {
     while ((ch = getchar()) != '\n' && ch != EOF);
 }
 
-
+/**
+* @brief 움직임을 쪼개 bitBoard에 맞는 형식으로 바꿔주는 함수
+* @param char* san 변환시킬 움직임의 메모리 주소
+* @return Move move 변환된 움직임
+*/
 Move paresSAN(char* san) {
     Move move = { convertToIndex(san[0], san[1]), convertToIndex(san[2], san[3]) };
     return move;

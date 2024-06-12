@@ -6,6 +6,7 @@ int main() {
     Board board;
 
     initializeBoard(&board);    
+    MoveList lastMoveList = { 0, 0 };
 
     while (1) {
         printFEN(&board);
