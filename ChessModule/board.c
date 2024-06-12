@@ -9,6 +9,7 @@
 void initializeBoard(Board* b) {
 
     b->turnToPlay = 1;
+    b->numMoves = 0;
 
     for (int i = 0; i < BOARD_SIZE; i++) {
         b->square[i] = None;

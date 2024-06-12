@@ -9,6 +9,8 @@ void printBoard(Board* b);
 
 void printMoveList(MoveList* moveList);
 
+void printFEN(Board* b);
+
 void getSAN(char* buffer);
 
 Move paresSAN(char* san);

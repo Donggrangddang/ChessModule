@@ -2,6 +2,7 @@
 #include "piece.h"
 #include "board.h"
 #include "legalMove.h"
+#include "move.h"
 #include <stdio.h>
 
 
@@ -39,14 +40,13 @@ void printBoard(Board * b) {
 
 
 void printMoveList(MoveList* moveList) {
+    printf("[");
     for (int i = 0; i < moveList->size; i++) {
-        int first = moveList->movesList[i].startSquare;
-        int second = moveList->movesList[i].targetSquare;
-        printf("[");
-        printf("%d, %d", first, second);
-        printf("],");
+        char startSquare[3] = { 'a' + (moveList->movesList[i].startSquare % 8), '1' + (moveList->movesList[i].startSquare / 8), '\0' };
+        char targetSquare[3] = { 'a' + (moveList->movesList[i].targetSquare % 8), '1' + (moveList->movesList[i].targetSquare / 8), '\0' };
+        printf(" %s%s,", startSquare, targetSquare);
     }
-    printf("\n");
+    printf("]\n");
 }
 
 
@@ -67,4 +67,33 @@ void getSAN(char* buffer) {
 Move paresSAN(char* san) {
     Move move = { convertToIndex(san[0], san[1]), convertToIndex(san[2], san[3]) };
     return move;
+}
+
+
+void printFEN(Board* b) {
+    for (int rank = 7; rank >= 0; rank--) {
+        int empty = 0;
+        for (int file = 0; file < 8; file++) {
+            int index = rank * 8 + file;
+            if (b->square[index] == None) {
+                empty++;
+            }
+            else {
+                if (empty > 0) {
+                    printf("%d", empty);
+                    empty = 0;
+                }
+                printf("%c", getPieceSymbol(b->square[index]));
+            }
+        }
+        if (empty > 0) {
+            printf("%d", empty);
+        }
+        if (rank > 0) {
+            printf("/");
+        }
+    }
+    printf(" %s", b->turnToPlay ? "w" : "b");
+    printf(" - -");
+    printf(" %d %d\n", b->numMoves, (1 + b->numMoves / 2));
 }

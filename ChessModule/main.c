@@ -8,15 +8,16 @@ int main() {
     initializeBoard(&board);    
 
     while (1) {
-        printBoard(&board);
+        printFEN(&board);
         MoveList moveList = { 0, 0 };
         moveList = generateLegalMoves(&board);
         printMoveList(&moveList);
         char san;
         getSAN(&san);
         if (san != '\0') {
-           doMove(&board, &moveList, paresSAN(&san));
+        doMove(&board, &moveList, paresSAN(&san));
         }
+        printBoard(&board);
     }
     
 

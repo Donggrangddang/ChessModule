@@ -49,10 +49,10 @@ int* generateAttackMap(Board* b, int color) {
 			}
 			else if (!isKing(piece)) {
 				if (isStraightPiece(piece)) {
-					generateStraightMoves(startSquare, &legalMoveList, b, !(b->turnToPlay));
+					generateStraightAttackMoves(startSquare, &legalMoveList, b, !(b->turnToPlay));
 				}
 				if (isSlidingPiece(piece)) {
-					generateSlidingMoves(startSquare, &legalMoveList, b, !(b->turnToPlay));
+					generateSlidingAttackMoves(startSquare, &legalMoveList, b, !(b->turnToPlay));
 				}
 				if (isPawn(piece)) {
 					generatePawnAttackMoves(startSquare, &legalMoveList, b, !(b->turnToPlay));
@@ -62,11 +62,6 @@ int* generateAttackMap(Board* b, int color) {
 				generateKingAttackMoves(startSquare, &legalMoveList, b, !(b->turnToPlay));
 			}
 		}
-	}
-
-	printf("Legal move list size: %d\n", legalMoveList.size);
-	for (int i = 0; i < legalMoveList.size; i++) {
-		printf("Move %d: %d\n", i, legalMoveList.movesList[i].targetSquare);
 	}
 
 	int* attackMap = (int*)malloc((BOARD_SIZE + 1) * sizeof(int));
@@ -95,10 +90,7 @@ int* generateAttackMap(Board* b, int color) {
 		}
 	}
 
-	printf("Attack map size: %d\n", attackMapSize);
-	for (int i = 0; i < attackMapSize; i++) {
-		printf("Attack map [%d] = %d\n", i, attackMap[i]);
-	}
+	qsort(attackMap, attackMapSize, sizeof(int), compareIntegers);
 
 	attackMap[BOARD_SIZE] = attackMapSize;
 	return attackMap;
@@ -111,60 +103,35 @@ MoveList generateLegalMoves(Board* b) {
 	Move move = { 0, 0 };
 	MoveList checkedLegalMoveList = { move, 0 };
 
-	if (isChecked(b, attackMap)) {
+	if (isChecked(b, attackMap, -1)) {
 		int kingSquare = 0;
 		for (int i = 0; i < BOARD_SIZE; i++) {
-			if (b->square[i] == (King | b->turnToPlay)) {
+			if (isColor(b->square[i], b->turnToPlay) && isKing(b->square[i])) {
 				kingSquare = i;
 				break;
 			}
 		}
-		for (int i = 0; i < 8; i++) {
-			int targetSquare = DirectionOffsets[i] + kingSquare;
-			for (int j = 0; j < attackMap[63]; j++) {
-				if (targetSquare == attackMap[j]) {
-					break;
-				}
-				if (j == attackMap[63] - 1) {
-					Move move = { kingSquare, targetSquare };
-					addLegalMove(&checkedLegalMoveList, move);
-				}
+		printf("King is checked\n");
+		MoveList legalMoveList = generateUncheckedMoves(b, attackMap);
+		for (int i = 0; i < legalMoveList.size; i++) {
+			Move move = legalMoveList.movesList[i];
+			doMove(b, &legalMoveList, move);
+			b->turnToPlay = !(b->turnToPlay);
+			free(attackMap);
+			int* attackMap = generateAttackMap(b, !(b->turnToPlay));
+			if (isChecked(b, attackMap, -1) == FALSE) {
+				addLegalMove(&checkedLegalMoveList, move);
 			}
+			b->turnToPlay = !(b->turnToPlay);
+			undoMove(b, move);
 		}
+		free(attackMap);
 		return checkedLegalMoveList;
 	}
 
-	MoveList legalMoveList = {move , 0 };
-
-	for (int startSquare = 0; startSquare < BOARD_SIZE; startSquare++) {
-
-		int piece = b->square[startSquare];
-
-		if (isColor(piece, b->turnToPlay)) {
-
-			if (isKnight(piece)) { // 나이트
-				generateKnightMoves(startSquare, &legalMoveList, b, b->turnToPlay);
-			}
-			else if (isKing(piece) == FALSE) {
-				if (isStraightPiece(piece)) { // 룩, 퀸
-					generateStraightMoves(startSquare, &legalMoveList, b, b->turnToPlay);
-				}
-				if (isSlidingPiece(piece)) { // 비숍, 퀸
-					generateSlidingMoves(startSquare, &legalMoveList, b, b->turnToPlay);
-				}
-				if (isPawn(piece)) { // 폰
-					generatePawnMoves(startSquare, &legalMoveList, b, b->turnToPlay);
-				}
-			}
-			else if (isKing(piece) == TRUE) { // 킹
-				generateKingMoves(startSquare, &legalMoveList, b, b->turnToPlay, attackMap);
-			}
-		}
-	}
+	return generateUncheckedMoves(b, attackMap);
 
 	free(attackMap);
-
-	return legalMoveList;
 }
 
 /**
@@ -289,7 +256,7 @@ void generateKingMoves(int startSquare, MoveList* l, Board* b, int color, int* a
 		}
 		// 보드의 경계를 넘어서는지 확인
 		if (targetSquare >= 0 && targetSquare < BOARD_SIZE) {
-			if (isChecked(b, attackMap) == FALSE) {
+			if (isChecked(b, attackMap, targetSquare) == FALSE) {
 				if (b->square[targetSquare] == None) { // 갈 수 있는 칸이 비었다
 					Move move = { startSquare, targetSquare };
 					addLegalMove(l, move);
@@ -299,22 +266,6 @@ void generateKingMoves(int startSquare, MoveList* l, Board* b, int color, int* a
 					addLegalMove(l, move);
 				}
 			}
-		}
-	}
-}
-
-
-void generateKingAttackMoves(int startSquare, MoveList* l, Board* b, int color) {
-	for (int i = 0; i < 8; i++) {
-		int targetSquare = startSquare + DirectionOffsets[i];
-		// 같은 행 또는 열에서 벗어나는지 확인
-		if (abs((targetSquare / 8) - (startSquare / 8)) > 1 || abs((targetSquare % 8) - (startSquare % 8)) > 1) {
-			continue;
-		}
-		// 보드의 경계를 넘어서는지 확인
-		if (targetSquare >= 0 && targetSquare < BOARD_SIZE) {
-			Move move = { startSquare, targetSquare };
-			addLegalMove(l, move);
 		}
 	}
 }
@@ -354,21 +305,123 @@ void generatePawnMoves(int startSquare, MoveList* l, Board* b, int color) {
 }
 
 
+void generateSlidingAttackMoves(int startSquare, MoveList* l, Board* b, int color) {
+
+	for (int i = 4; i < 8; i++) {
+		int targetSquare = startSquare;
+		targetSquare += DirectionOffsets[i];
+		while (targetSquare >= 0 && targetSquare < BOARD_SIZE) {
+			if (targetSquare % 8 == 0 || targetSquare % 8 == 7 || targetSquare / 8 == 0 || targetSquare / 8 == 7) {
+				if (b->square[targetSquare] == None) { // 갈 수 있는 칸이 비었다
+					Move move = { startSquare, targetSquare };
+					addLegalMove(l, move);
+				}
+				else { // 갈 수 있는 칸에 기물이 있다
+					Move move = { startSquare, targetSquare };
+					addLegalMove(l, move);
+				}
+				break; // 가장자리에 도착하면 루프를 종료
+			}
+			if (b->square[targetSquare] == 0) { // 갈 수 있는 칸이 비었다
+				Move move = { startSquare, targetSquare };
+				addLegalMove(l, move);
+				targetSquare += DirectionOffsets[i];
+			}
+			else { // 갈 수 있는 칸에 상대 기물이 있다
+				Move move = { startSquare, targetSquare };
+				addLegalMove(l, move);
+				break;
+			}
+		}
+	}
+}
+
+/**
+* @brief 직선 움직임(룩)을 만들어 주는 함수
+* @param int startSquare : 움직일 기물이 위치한 Square
+* @param Movelist *l : 이 움직임을 추가할 Movelist의 메모리 주소
+* @param Board *b : 움직일 기물을 찾을 Board의 메모리 주소
+*20250517
+*/
+void generateStraightAttackMoves(int startSquare, MoveList* l, Board* b, int color) {
+
+	for (int i = 0; i < 4; i++) {
+		int targetSquare = startSquare;
+		targetSquare += DirectionOffsets[i];
+		while (targetSquare >= 0 && targetSquare < BOARD_SIZE) {
+			if (targetSquare % 8 == 0 || targetSquare % 8 == 7 || targetSquare / 8 == 0 || targetSquare / 8 == 7) {
+				if (b->square[targetSquare] == None) { // 갈 수 있는 칸이 비었다
+					Move move = { startSquare, targetSquare };
+					addLegalMove(l, move);
+				}
+				else { // 갈 수 있는 칸에 상대 기물이 있다
+					Move move = { startSquare, targetSquare };
+					addLegalMove(l, move);
+				}
+				break; // 가장자리에 도착하면 루프를 종료
+			}
+			if (b->square[targetSquare] == None) { // 갈 수 있는 칸이 비었다
+				Move move = { startSquare, targetSquare };
+				addLegalMove(l, move);
+				targetSquare += DirectionOffsets[i];
+			}
+			else { // 갈 수 있는 칸에 상대 기물이 있다
+				Move move = { startSquare, targetSquare };
+				addLegalMove(l, move);
+				break;
+			}
+		}
+	}
+}
+
+
+void generateKingAttackMoves(int startSquare, MoveList* l, Board* b, int color) {
+	for (int i = 0; i < 8; i++) {
+		int targetSquare = startSquare + DirectionOffsets[i];
+		// 같은 행 또는 열에서 벗어나는지 확인
+		if (abs((targetSquare / 8) - (startSquare / 8)) > 1 || abs((targetSquare % 8) - (startSquare % 8)) > 1) {
+			continue;
+		}
+		// 보드의 경계를 넘어서는지 확인
+		if (targetSquare >= 0 && targetSquare < BOARD_SIZE) {
+			Move move = { startSquare, targetSquare };
+			addLegalMove(l, move);
+		}
+	}
+}
+
+
 void generatePawnAttackMoves(int startSquare, MoveList* l, Board* b, int color) {
 	if (startSquare % 8 != 0) {
 		int leftCaptureSquare = startSquare - 9 + 16 * color;
-		if (b->square[leftCaptureSquare] != None && b->square[leftCaptureSquare] != color) {
-			Move move = { startSquare, leftCaptureSquare };
-			addLegalMove(l, move);
-		}
+		Move move = { startSquare, leftCaptureSquare };
+		addLegalMove(l, move);
 	}
 
 	// 현재 위치가 h열이 아닌 경우, 대각선 오른쪽으로 이동 가능 여부 확인
 	if (startSquare % 8 != 7) {
 		int rightCaptureSquare = startSquare - 7 + 16 * color;
-		if (b->square[rightCaptureSquare] != None && b->square[rightCaptureSquare] != color) {
-			Move move = { startSquare, rightCaptureSquare };
-			addLegalMove(l, move);
+		Move move = { startSquare, rightCaptureSquare };
+		addLegalMove(l, move);
+	}
+}
+
+
+void generateKingCheckedMoves(int startSquare, MoveList* l, Board* b, int color, int* attackMap) {
+	for (int i = 0; i < 8; i++) {
+		int targetSquare = startSquare + DirectionOffsets[i];
+		// 같은 행 또는 열에서 벗어나는지 확인
+		if (abs((targetSquare / 8) - (startSquare / 8)) > 1 || abs((targetSquare % 8) - (startSquare % 8)) > 1) {
+			continue;
+		}
+		// 보드의 경계를 넘어서는지 확인
+		if (targetSquare >= 0 && targetSquare < BOARD_SIZE) {
+			if (b->square[targetSquare] == None) {
+				if (isChecked(b, attackMap, targetSquare) == FALSE) {
+					Move move = { startSquare, targetSquare };
+					addLegalMove(l, move);
+				}
+			}
 		}
 	}
 }
@@ -379,20 +432,61 @@ int compareIntegers(const void* a, const void* b) {
 }
 
 
-int isChecked(Board* b, int* attackMap) {
+int isChecked(Board* b, int* attackMap, int param) {
+
 	int kingSquare = 0;
-	for (int i = 0; i < BOARD_SIZE; i++) {
-		if (b->square[i] == (King | b->turnToPlay)) {
-			kingSquare = i;
-			break;
+
+	if (param == -1) {
+		for (int i = 0; i < BOARD_SIZE; i++) {
+			if (isColor(b->square[i], b->turnToPlay) && isKing(b->square[i])) {
+				kingSquare = i;
+				break;
+			}
 		}
 	}
-	int attackMapSize = attackMap[64];
+	else {
+		kingSquare = param;
+	}
 
+	int attackMapSize = attackMap[64];
 	for (int i = 0; i < attackMapSize - 1; i++) {
 		if (kingSquare == attackMap[i]) {
 			return TRUE;
 		}
 	}
 	return FALSE;
+}
+
+
+MoveList generateUncheckedMoves(Board* b, int* attackMap) {
+	Move move = { 0, 0 };
+	MoveList legalMoveList = { move , 0 };
+
+	for (int startSquare = 0; startSquare < BOARD_SIZE; startSquare++) {
+
+		int piece = b->square[startSquare];
+
+		if (isColor(piece, b->turnToPlay)) {
+
+			if (isKnight(piece)) { // 나이트
+				generateKnightMoves(startSquare, &legalMoveList, b, b->turnToPlay);
+			}
+			else if (isKing(piece) == FALSE) {
+				if (isStraightPiece(piece)) { // 룩, 퀸
+					generateStraightMoves(startSquare, &legalMoveList, b, b->turnToPlay);
+				}
+				if (isSlidingPiece(piece)) { // 비숍, 퀸
+					generateSlidingMoves(startSquare, &legalMoveList, b, b->turnToPlay);
+				}
+				if (isPawn(piece)) { // 폰
+					generatePawnMoves(startSquare, &legalMoveList, b, b->turnToPlay);
+				}
+			}
+			else if (isKing(piece) == TRUE) { // 킹
+				generateKingMoves(startSquare, &legalMoveList, b, b->turnToPlay, attackMap);
+			}
+		}
+	}
+
+	return legalMoveList;
 }

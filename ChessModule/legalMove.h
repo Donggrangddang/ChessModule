@@ -35,13 +35,21 @@ void generateKnightMoves(int startSquare, MoveList* l, Board* b, int color);
 
 void generateKingMoves(int startSquare, MoveList* l, Board* b, int color, int* attackMap);
 
-void generateKingAttackMoves(int startSquare, MoveList* l, Board* b, int color);
-
 void generatePawnMoves(int startSquare, MoveList* l, Board* b, int color);
+
+void generateSlidingAttackMoves(int startSquare, MoveList* l, Board* b, int color);
+
+void generateStraightAttackMoves(int startSquare, MoveList* l, Board* b, int color);
+
+void generateKingAttackMoves(int startSquare, MoveList* l, Board* b, int color);
 
 void generatePawnAttackMoves(int startSquare, MoveList* l, Board* b, int color);
 
+void generateKingCheckedMoves(int startSquare, MoveList* l, Board* b, int color, int* attackMap);
+
 int compareIntegers(const void* a, const void* b);
 
-int isChecked(Board* b, int* attackMap);
+int isChecked(Board* b, int* attackMap, int kingSquare); // kingSquare이 -1이면 kingSquare 계산하는거
+
+MoveList generateUncheckedMoves(Board* b, int* attackMap);
 #endif
