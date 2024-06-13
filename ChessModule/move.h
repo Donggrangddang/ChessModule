@@ -9,5 +9,5 @@ char convertToSAN(int square);
 
 int doMove(Board* b, MoveList* l, Move move);
 
-void undoMove(Board* b, Move lastMove);
+void undoMove(Board* b, Move lastMove, int piece);
 #endif

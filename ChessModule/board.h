@@ -10,4 +10,6 @@ typedef struct {
 } Board;
 
 void initializeBoard(Board* b);
+
+void setBoardFromFEN(Board* b, const char* fen);
 #endif

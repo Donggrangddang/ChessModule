@@ -1,6 +1,7 @@
 #include "board.h"
 #include "piece.h"
 #include <stdio.h>
+#include <string.h>
 
 /**
 * @brief 보드 처음 상태로 초기화
@@ -39,5 +40,79 @@ void initializeBoard(Board* b) {
 
     for (int i = 48; i < 56; i++) {
         b->square[i] = Black | Pawn;
+    }
+}
+
+
+void setBoardFromFEN(Board* b, const char* fen) {
+    memset(b, 0, sizeof(Board)); // 보드 초기화
+
+    int rank = 7;
+    int file = 0;
+    int section = 0; // FEN 문자열의 현재 섹션을 추적
+
+    for (int i = 0; fen[i]; i++) {
+        if (fen[i] == ' ') { // 섹션 구분
+            section++;
+            if (section == 1) {
+                file = 0;
+                rank = 7;
+            }
+            continue;
+        }
+
+        if (section == 0) { // 기물 배치
+            if (fen[i] == '/') {
+                rank--;
+                file = 0;
+            }
+            else if (fen[i] >= '1' && fen[i] <= '8') {
+                file += fen[i] - '0';
+            }
+            else {
+                int square = rank * 8 + file;
+                switch (fen[i]) {
+                    case 'r': b->square[square] = Black | Rook; break;
+                    case 'n': b->square[square] = Black | Knight; break;
+                    case 'b': b->square[square] = Black | Bishop; break;
+                    case 'q': b->square[square] = Black | Queen; break;
+                    case 'k': b->square[square] = Black | King; break;
+                    case 'p': b->square[square] = Black | Pawn; break;
+                    case 'R': b->square[square] = White | Rook; break;
+                    case 'N': b->square[square] = White | Knight; break;
+                    case 'B': b->square[square] = White | Bishop; break;
+                    case 'Q': b->square[square] = White | Queen; break;
+                    case 'K': b->square[square] = White | King; break;
+                    case 'P': b->square[square] = White | Pawn; break;
+                }
+                file++;
+            }
+        }
+        else if (section == 1) { // 현재 턴
+            b->turnToPlay = (fen[i] == 'w') ? 1 : 0;
+        }
+
+        /*
+
+        else if (section == 2) { // 캐슬링 권한
+            // 캐슬링 권한 설정 코드...
+            if (fen[i] == '-') continue; // 캐슬링 권한 없음
+            // 예: b->castleRights |= (fen[i] == 'K') ? CASTLE_KING_WHITE : 0;
+        }
+        else if (section == 3) { // 앙파상 대상
+            // 앙파상 대상 설정 코드...
+            if (fen[i] != '-') {
+                int file = fen[i] - 'a';
+                int rank = 8 - (fen[i + 1] - '0');
+                b->enPassantTarget = rank * 8 + file;
+                i++; // 숫자도 건너뛰기
+            }
+        }
+
+        */
+
+        else if (section == 4) { // 반 이동 횟수
+            b->numMoves = (fen[i] - '0');
+        }
     }
 }

@@ -28,6 +28,7 @@ char getPieceSymbol(int piece) {
 * @param Board* b 보드의 메모리 주소
 */
 void printBoard(Board * b) {
+    printf("Board\n");
     for (int rank = 7; rank >= 0; rank--) {
         for (int file = 0; file < 8; file++) {
             int index = rank * 8 + file;
@@ -38,16 +39,49 @@ void printBoard(Board * b) {
     }
 }
 
+// attackMap에 index가 포함되어 있는지 확인하는 함수
+int isAttacked(int index, int* attackMap) {
+    int mapSize = attackMap[64];
+    for (int i = 0; i < mapSize; i++) {
+        if (attackMap[i] == index) {
+            return 1; // 공격당하는 위치 발견
+        }
+    }
+    return 0; // 공격당하지 않음
+}
+
+void printAttackMap(int* attackMap) {
+    printf("Attack Map\n");
+    for (int rank = 7; rank >= 0; rank--) {
+        for (int file = 0; file < 8; file++) {
+            int index = rank * 8 + file; // 보드의 각 위치를 나타내는 인덱스 계산
+            if (isAttacked(index, attackMap)) {
+                printf("x ");
+            }
+            else {
+                printf(". ");
+            }
+        }
+        printf("\n");
+    }
+}
+
+
+void printMove(Move move) {
+    char startSquare[3] = { 'a' + (move.startSquare % 8), '1' + (move.startSquare / 8), '\0' };
+    char targetSquare[3] = { 'a' + (move.targetSquare % 8), '1' + (move.targetSquare / 8), '\0' };
+    printf(" %s%s,", startSquare, targetSquare);
+}
+
 
 void printMoveList(MoveList* moveList) {
     printf("[");
     for (int i = 0; i < moveList->size; i++) {
-        char startSquare[3] = { 'a' + (moveList->movesList[i].startSquare % 8), '1' + (moveList->movesList[i].startSquare / 8), '\0' };
-        char targetSquare[3] = { 'a' + (moveList->movesList[i].targetSquare % 8), '1' + (moveList->movesList[i].targetSquare / 8), '\0' };
-        printf(" %s%s,", startSquare, targetSquare);
+        printMove(moveList->movesList[i]);
     }
     printf("]\n");
 }
+
 
 
 void getSAN(char* buffer) {

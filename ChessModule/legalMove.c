@@ -3,14 +3,17 @@
 #include "board.h"
 #include "move.h"
 #include "malloc.h"
+#include "interface.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
 
 const int KnightDirectionOffsets[8][2] = {
 		{-2, -1}, {-2, 1}, {2, -1}, {2, 1},
 		{-1, -2}, {-1, 2}, {1, -2}, {1, 2}
 };
-const int DirectionOffsets[8] = {8, -8, -1, 1, 7, -7, 9, -9}; // 북 남 서 동
+const int DirectionOffsets[8] = {8, -8, -1, 1, 7, -7, 9, -9}; // 북 남 서 동 북서 남동 북동 남서
 
 /**
 * @brief 가능한 움직임을 list에 추가
@@ -100,6 +103,7 @@ int* generateAttackMap(Board* b, int color) {
 MoveList generateLegalMoves(Board* b) {
 
 	int* attackMap = generateAttackMap(b, !(b->turnToPlay));
+	printAttackMap(attackMap);
 	Move move = { 0, 0 };
 	MoveList checkedLegalMoveList = { move, 0 };
 
@@ -115,23 +119,23 @@ MoveList generateLegalMoves(Board* b) {
 		MoveList legalMoveList = generateUncheckedMoves(b, attackMap);
 		for (int i = 0; i < legalMoveList.size; i++) {
 			Move move = legalMoveList.movesList[i];
-			doMove(b, &legalMoveList, move);
+			int piece = doMove(b, &legalMoveList, move);
 			b->turnToPlay = !(b->turnToPlay);
-			free(attackMap);
-			int* attackMap = generateAttackMap(b, !(b->turnToPlay));
-			if (isChecked(b, attackMap, -1) == FALSE) {
+			int* newAttackMap = generateAttackMap(b, !(b->turnToPlay));
+			printf("newAttackMap\n");
+			printAttackMap(newAttackMap);
+			printMove(move);
+			if (isChecked(b, newAttackMap, -1) == FALSE) {
 				addLegalMove(&checkedLegalMoveList, move);
 			}
 			b->turnToPlay = !(b->turnToPlay);
-			undoMove(b, move);
+			free(newAttackMap);
+			undoMove(b, move, piece);
 		}
-		free(attackMap);
 		return checkedLegalMoveList;
 	}
 
 	return generateUncheckedMoves(b, attackMap);
-
-	free(attackMap);
 }
 
 /**
@@ -306,10 +310,63 @@ void generatePawnMoves(int startSquare, MoveList* l, Board* b, int color) {
 
 
 void generateSlidingAttackMoves(int startSquare, MoveList* l, Board* b, int color) {
+	int length = 2;
+	int array_i[4] = { 0 }; // 모든 경우를 커버할 수 있도록 크기를 4로 설정
 
-	for (int i = 4; i < 8; i++) {
+	int file = startSquare % 8;
+	int rank = startSquare / 8;
+	switch (file) {
+	case 0:
+		switch (rank) {
+		case 0:
+			array_i[0] = 5;
+			length = 1;
+			break;
+		case 7:
+			array_i[0] = 4;
+			length = 1;
+			break;
+		default:
+			array_i[0] = 5; array_i[1] = 6;
+			length = 2;
+			break;
+		}
+		break;
+	case 7:
+		switch (rank) {
+		case 0:
+			array_i[0] = 7;
+			length = 1;
+			break;
+		case 7:
+			array_i[0] = 5;
+			length = 1;
+			break;
+		default:
+			array_i[0] = 5; array_i[1] = 7;
+			length = 2;
+			break;
+		}
+		break;
+	default:
+		if (rank == 0) {
+			array_i[0] = 6; array_i[1] = 7;
+			length = 2;
+		}
+		else if (rank == 7) {
+			array_i[0] = 4; array_i[1] = 5;
+			length = 2;
+		}
+		else {
+			array_i[0] = 4; array_i[1] = 5; array_i[2] = 6; array_i[3] = 7;
+			length = 4;
+		}
+		break;
+	}
+
+	for (int j = 0; j < length; j++) {
 		int targetSquare = startSquare;
-		targetSquare += DirectionOffsets[i];
+		targetSquare += DirectionOffsets[array_i[j]]; // 문제 1과 2를 해결하기 위해 괄호를 올바르게 닫음
 		while (targetSquare >= 0 && targetSquare < BOARD_SIZE) {
 			if (targetSquare % 8 == 0 || targetSquare % 8 == 7 || targetSquare / 8 == 0 || targetSquare / 8 == 7) {
 				if (b->square[targetSquare] == None) { // 갈 수 있는 칸이 비었다
@@ -322,10 +379,10 @@ void generateSlidingAttackMoves(int startSquare, MoveList* l, Board* b, int colo
 				}
 				break; // 가장자리에 도착하면 루프를 종료
 			}
-			if (b->square[targetSquare] == 0) { // 갈 수 있는 칸이 비었다
+			if (b->square[targetSquare] == None) { // 갈 수 있는 칸이 비었다
 				Move move = { startSquare, targetSquare };
 				addLegalMove(l, move);
-				targetSquare += DirectionOffsets[i];
+				targetSquare += DirectionOffsets[array_i[j]]; // 문제 3을 해결하기 위해 'i'를 'array_i[j]'로 변경
 			}
 			else { // 갈 수 있는 칸에 상대 기물이 있다
 				Move move = { startSquare, targetSquare };
@@ -336,6 +393,7 @@ void generateSlidingAttackMoves(int startSquare, MoveList* l, Board* b, int colo
 	}
 }
 
+
 /**
 * @brief 직선 움직임(룩)을 만들어 주는 함수
 * @param int startSquare : 움직일 기물이 위치한 Square
@@ -345,16 +403,69 @@ void generateSlidingAttackMoves(int startSquare, MoveList* l, Board* b, int colo
 */
 void generateStraightAttackMoves(int startSquare, MoveList* l, Board* b, int color) {
 
-	for (int i = 0; i < 4; i++) {
+	int length = 2;
+	int array_i[4] = { 0 }; // 모든 경우를 커버할 수 있도록 크기를 4로 설정
+	int temp[4] = { 0 }; // 최대 크기로 선언하여 모든 경우에 재사용
+
+	int file = startSquare % 8;
+	int rank = startSquare / 8;
+
+	switch (file) {
+	case 0:
+		switch (rank) {
+		case 0:
+			temp[0] = 0; temp[1] = 3; length = 2;
+			break;
+		case 7:
+			temp[0] = 1; temp[1] = 3; length = 2;
+			break;
+		default:
+			temp[0] = 0; temp[1] = 1; temp[2] = 3; length = 3;
+			break;
+		}
+		break;
+
+	case 7:
+		switch (rank) {
+		case 0:
+			temp[0] = 0; temp[1] = 2; length = 2;
+			break;
+		case 7:
+			temp[0] = 1; temp[1] = 2; length = 2;
+			break;
+		default:
+			temp[0] = 0; temp[1] = 1; temp[2] = 2; length = 3;
+			break;
+		}
+		break;
+
+	default:
+		switch (rank) {
+		case 0:
+			temp[0] = 0; temp[1] = 2; temp[2] = 3; length = 3;
+			break;
+		case 7:
+			temp[0] = 1; temp[1] = 2; temp[2] = 3; length = 3;
+			break;
+		default:
+			temp[0] = 4; temp[1] = 5; temp[2] = 6; temp[3] = 7; length = 4;
+			break;
+		}
+		break;
+	}
+
+	memcpy(array_i, temp, length * sizeof(int));
+
+	for (int j = 0; j < length; j++) {
 		int targetSquare = startSquare;
-		targetSquare += DirectionOffsets[i];
+		targetSquare += DirectionOffsets[array_i[j]]; // 문제 1과 2를 해결하기 위해 괄호를 올바르게 닫음
 		while (targetSquare >= 0 && targetSquare < BOARD_SIZE) {
 			if (targetSquare % 8 == 0 || targetSquare % 8 == 7 || targetSquare / 8 == 0 || targetSquare / 8 == 7) {
 				if (b->square[targetSquare] == None) { // 갈 수 있는 칸이 비었다
 					Move move = { startSquare, targetSquare };
 					addLegalMove(l, move);
 				}
-				else { // 갈 수 있는 칸에 상대 기물이 있다
+				else { // 갈 수 있는 칸에 기물이 있다
 					Move move = { startSquare, targetSquare };
 					addLegalMove(l, move);
 				}
@@ -363,7 +474,7 @@ void generateStraightAttackMoves(int startSquare, MoveList* l, Board* b, int col
 			if (b->square[targetSquare] == None) { // 갈 수 있는 칸이 비었다
 				Move move = { startSquare, targetSquare };
 				addLegalMove(l, move);
-				targetSquare += DirectionOffsets[i];
+				targetSquare += DirectionOffsets[array_i[j]]; // 문제 3을 해결하기 위해 'i'를 'array_i[j]'로 변경
 			}
 			else { // 갈 수 있는 칸에 상대 기물이 있다
 				Move move = { startSquare, targetSquare };
@@ -398,7 +509,6 @@ void generatePawnAttackMoves(int startSquare, MoveList* l, Board* b, int color) 
 		addLegalMove(l, move);
 	}
 
-	// 현재 위치가 h열이 아닌 경우, 대각선 오른쪽으로 이동 가능 여부 확인
 	if (startSquare % 8 != 7) {
 		int rightCaptureSquare = startSquare - 7 + 16 * color;
 		Move move = { startSquare, rightCaptureSquare };
@@ -487,6 +597,7 @@ MoveList generateUncheckedMoves(Board* b, int* attackMap) {
 			}
 		}
 	}
-
+	
+	free(attackMap);
 	return legalMoveList;
 }
