@@ -16,10 +16,21 @@ int main() {
         MoveList moveList = { 0, 0 };
         moveList = generateLegalMoves(&board);
         printMoveList(&moveList);
-        char san;
-        getSAN(&san);
+        char san[6];
+        getSAN(san);
         if (san != '\0') {
-        doMove(&board, &moveList, paresSAN(&san));
+            doMove(&board, &moveList, paresSAN(&san));
+        }
+        int isMate = isCheckMate(&board);
+        if (isMate == 1) {
+            printBoard(&board);
+            printCheckMate(&board);
+            break;
+        }
+        else if (isMate == 2) {
+            printBoard(&board);
+            printStaleMate(&board);
+            break;
         }
     }
     

@@ -52,4 +52,8 @@ int compareIntegers(const void* a, const void* b);
 int isChecked(Board* b, int* attackMap, int kingSquare); // kingSquare이 -1이면 kingSquare 계산하는거
 
 MoveList generateUncheckedMoves(Board* b, int* attackMap);
+
+int isStaleMate(Board* b);
+
+int isCheckMate(Board* b);
 #endif

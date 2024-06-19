@@ -20,4 +20,8 @@ void printAttackMap(int* attackMap);
 Move paresSAN(char* san);
 
 void printFEN(Board* b);
+
+void printCheckMate(Board* b);
+
+void printStaleMate(Board* b);
 #endif

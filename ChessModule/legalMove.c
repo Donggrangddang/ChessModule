@@ -103,7 +103,6 @@ int* generateAttackMap(Board* b, int color) {
 MoveList generateLegalMoves(Board* b) {
 
 	int* attackMap = generateAttackMap(b, !(b->turnToPlay));
-	printAttackMap(attackMap);
 	Move move = { 0, 0 };
 	MoveList checkedLegalMoveList = { move, 0 };
 
@@ -122,9 +121,6 @@ MoveList generateLegalMoves(Board* b) {
 			int piece = doMove(b, &legalMoveList, move);
 			b->turnToPlay = !(b->turnToPlay);
 			int* newAttackMap = generateAttackMap(b, !(b->turnToPlay));
-			printf("newAttackMap\n");
-			printAttackMap(newAttackMap);
-			printMove(move);
 			if (isChecked(b, newAttackMap, -1) == FALSE) {
 				addLegalMove(&checkedLegalMoveList, move);
 			}
@@ -558,8 +554,8 @@ int isChecked(Board* b, int* attackMap, int param) {
 		kingSquare = param;
 	}
 
-	int attackMapSize = attackMap[64];
-	for (int i = 0; i < attackMapSize - 1; i++) {
+	int attackMapSize = attackMap[BOARD_SIZE];
+	for (int i = 0; i < attackMapSize; i++) {
 		if (kingSquare == attackMap[i]) {
 			return TRUE;
 		}
@@ -600,4 +596,17 @@ MoveList generateUncheckedMoves(Board* b, int* attackMap) {
 	
 	free(attackMap);
 	return legalMoveList;
+}
+
+
+int isCheckMate(Board* b) {
+
+	MoveList legalMoveList = generateLegalMoves(b);
+	if (legalMoveList.size == 0) {
+		if (isChecked(b, generateAttackMap(b, b->turnToPlay), -1)) {
+			return 2;
+		}
+		return 1;
+	}
+	return 0;
 }

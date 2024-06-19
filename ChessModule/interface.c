@@ -135,3 +135,17 @@ void printFEN(Board* b) {
     printf(" - -");
     printf(" %d %d\n", b->numMoves, (1 + b->numMoves / 2));
 }
+
+void printCheckMate(Board* b) {
+	printf("Checkmate! ");
+    if (b->turnToPlay) {
+		printf("Black wins!\n");
+	}
+	else {
+		printf("White wins!\n");
+	}
+}
+
+void printStaleMate(Board* b) {
+    	printf("Stalemate!\n");
+}
