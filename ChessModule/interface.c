@@ -4,7 +4,7 @@
 #include "legalMove.h"
 #include "move.h"
 #include <stdio.h>
-
+#include <string.h>
 
 /**
 * @brief 숫자로 표시된 기물을 알파벳으로 변경
@@ -87,7 +87,7 @@ void printMoveList(MoveList* moveList) {
 void getSAN(char* buffer) {
     printf("Enter your Move: ");
 
-    if (scanf("%4s", buffer) != 1) { // 최대 4글자 입력
+    if (scanf("%5s", buffer) != 1) { // 최대 4글자 입력
         printf("Failed to read input.\n");
         buffer[0] = '\0'; // 실패 시 빈 문자열 반환
     }
@@ -102,10 +102,26 @@ void getSAN(char* buffer) {
 * @param char* san 변환시킬 움직임의 메모리 주소
 * @return Move move 변환된 움직임
 */
-Move paresSAN(char* san) {
-    Move move = { convertToIndex(san[0], san[1]), convertToIndex(san[2], san[3]) };
-    return move;
+Move parseSAN(char* san) {
+    int length = strlen(san);
+    Move move;
+
+    if (length == 4) {
+        Move move = { convertToIndex(san[0], san[1]), convertToIndex(san[2], san[3]), 0 };
+        return move;
+    }
+    else if (length == 5) {
+        Move move = { convertToIndex(san[0], san[1]), convertToIndex(san[2], san[3]),  symbolToNumber(san[4])};
+        return move;
+    }
+    else {
+        Move move = { 0, 0, -1 };
+        return move;
+    }
+
+    
 }
+
 
 
 void printFEN(Board* b) {
@@ -132,7 +148,19 @@ void printFEN(Board* b) {
         }
     }
     printf(" %s", b->turnToPlay ? "w" : "b");
-    printf(" - -");
+
+
+    printf(" -"); // castling
+
+
+    if (b->enPassantSquare == -1) {
+		printf(" -");
+	}
+	else {
+		printf(" %s", enPassantPosition[b->enPassantSquare]);
+	}
+
+
     printf(" %d %d\n", b->numMoves, (1 + b->numMoves / 2));
 }
 

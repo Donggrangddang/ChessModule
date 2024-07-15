@@ -6,13 +6,17 @@
 
 #define MAX_SIZE 100
 
-extern const int DirectionOffsets[8];
-extern const int KnightDirectionOffsets[8][2];
-
 typedef struct {
 	int startSquare; // readonly
 	int targetSquare; // readonly
+	int promotionPiece;
 } Move;
+
+
+extern const int DirectionOffsets[8];
+extern const int KnightDirectionOffsets[8][2];
+extern const Move enPassantSquare[16];
+extern const char enPassantPosition[16][4];
 
 typedef struct {
 	Move movesList[MAX_SIZE];
@@ -53,7 +57,7 @@ int isChecked(Board* b, int* attackMap, int kingSquare); // kingSquare¿Ã -1¿Ã∏È 
 
 MoveList generateUncheckedMoves(Board* b, int* attackMap);
 
-int isStaleMate(Board* b);
+int isMate(Board* b);
 
-int isCheckMate(Board* b);
+void generatePromotionMoves(MoveList* l, Move move, Board* b);
 #endif

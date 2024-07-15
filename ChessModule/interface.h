@@ -17,7 +17,7 @@ void isAttacked(int index, int* attackMap);
 
 void printAttackMap(int* attackMap);
 
-Move paresSAN(char* san);
+Move parseSAN(char* san);
 
 void printFEN(Board* b);
 

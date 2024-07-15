@@ -99,17 +99,16 @@ void setBoardFromFEN(Board* b, const char* fen) {
             if (fen[i] == '-') continue; // 캐슬링 권한 없음
             // 예: b->castleRights |= (fen[i] == 'K') ? CASTLE_KING_WHITE : 0;
         }
-        else if (section == 3) { // 앙파상 대상
-            // 앙파상 대상 설정 코드...
-            if (fen[i] != '-') {
-                int file = fen[i] - 'a';
-                int rank = 8 - (fen[i + 1] - '0');
-                b->enPassantTarget = rank * 8 + file;
-                i++; // 숫자도 건너뛰기
-            }
-        }
-
         */
+        else if (section == 3) { // 앙파상 대상
+            if (fen[i] >= 'a' && fen[i] <= 'h') {
+                b->enPassantSquare = (fen[i] - 'a') + (fen[i + 1] - '3') * 3 - 1 ; // 'a'부터 'h'까지의 문자를 0부터 7까지의 숫자로 변환
+            }
+            else {
+                b->enPassantSquare = -1; // 앙파상 대상이 없음을 나타내는 값
+            }
+
+        }
 
         else if (section == 4) { // 반 이동 횟수
             b->numMoves = (fen[i] - '0');

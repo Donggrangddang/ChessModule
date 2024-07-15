@@ -58,3 +58,44 @@ int isPawn(int piece) {
 	}
 	return FALSE;
 }
+
+
+#define Black 0x8
+#define White 0x10
+#define Rook 0x4
+#define Knight 0x2
+#define Bishop 0x3
+#define Queen 0x5
+#define King 0x6
+#define Pawn 0x1
+
+int symbolToNumber(char symbol) {
+	switch (symbol) {
+	case 'r':
+		return Black | Rook;
+	case 'R':
+		return White | Rook;
+	case 'n':
+		return Black | Knight;
+	case 'N':
+		return White | Knight;
+	case 'b':
+		return Black | Bishop;
+	case 'B':
+		return White | Bishop;
+	case 'q':
+		return Black | Queen;
+	case 'Q':
+		return White | Queen;
+	case 'k':
+		return Black | King;
+	case 'K':
+		return White | King;
+	case 'p':
+		return Black | Pawn;
+	case 'P':
+		return White | Pawn;
+	default:
+		return -1;  // 유효하지 않은 기호의 경우 -1 반환
+	}
+}

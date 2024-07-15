@@ -15,6 +15,16 @@ const int KnightDirectionOffsets[8][2] = {
 };
 const int DirectionOffsets[8] = {8, -8, -1, 1, 7, -7, 9, -9}; // 북 남 서 동 북서 남동 북동 남서
 
+const Move enPassantSquare[16] = {
+	{8, 24}, {9, 25}, {10, 26}, {11, 27}, {12, 28}, {13, 29}, {14, 30}, {15, 31}, 
+	{48, 32}, {49, 33}, {50, 34}, {51, 35}, {52, 36}, {53, 37}, {54, 38}, {55, 39}
+};
+
+const char enPassantPosition[16][4] = {
+	"a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3",
+	"a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6"
+};
+
 /**
 * @brief 가능한 움직임을 list에 추가
 * @param MoveList* list MoveList의 메모리 주소
@@ -118,7 +128,7 @@ MoveList generateLegalMoves(Board* b) {
 		MoveList legalMoveList = generateUncheckedMoves(b, attackMap);
 		for (int i = 0; i < legalMoveList.size; i++) {
 			Move move = legalMoveList.movesList[i];
-			int piece = doMove(b, &legalMoveList, move);
+			MoveResult moveResult= doMove(b, &legalMoveList, move);
 			b->turnToPlay = !(b->turnToPlay);
 			int* newAttackMap = generateAttackMap(b, !(b->turnToPlay));
 			if (isChecked(b, newAttackMap, -1) == FALSE) {
@@ -126,7 +136,7 @@ MoveList generateLegalMoves(Board* b) {
 			}
 			b->turnToPlay = !(b->turnToPlay);
 			free(newAttackMap);
-			undoMove(b, move, piece);
+			undoMove(b, move, moveResult);
 		}
 		return checkedLegalMoveList;
 	}
@@ -281,16 +291,28 @@ void generatePawnMoves(int startSquare, MoveList* l, Board* b, int color) {
 			addLegalMove(l, move);
 		}
 		// 한 칸 전진
-		Move move = { startSquare, startSquare - 8 + 16 * color };
-		addLegalMove(l, move);
+		if (startSquare / 8 == (7 * color)) {
+			Move move = {startSquare, startSquare - 8 + 16 * color };
+			generatePromotionMoves(l, move, b);
+		}
+		else {
+			Move move = { startSquare, startSquare - 8 + 16 * color };
+			addLegalMove(l, move);
+		}
 	}
 
 	// 현재 위치가 a열이 아닌 경우, 대각선 왼쪽으로 이동 가능 여부 확인
 	if (startSquare % 8 != 0) {
 		int leftCaptureSquare = startSquare - 9 + 16 * color;
 		if (b->square[leftCaptureSquare] != None && b->square[leftCaptureSquare] != color) {
-			Move move = { startSquare, leftCaptureSquare };
-			addLegalMove(l, move);
+			if (startSquare / 8 == (7 * color)) {
+				Move move = { startSquare, startSquare - 8 + 16 * color };
+				generatePromotionMoves(l, move, b);
+			}
+			else {
+				Move move = { startSquare, startSquare - 8 + 16 * color };
+				addLegalMove(l, move);
+			}
 		}
 	}
 
@@ -298,8 +320,14 @@ void generatePawnMoves(int startSquare, MoveList* l, Board* b, int color) {
 	if (startSquare % 8 != 7) {
 		int rightCaptureSquare = startSquare - 7 + 16 * color;
 		if (b->square[rightCaptureSquare] != None && b->square[rightCaptureSquare] != color) {
-			Move move = { startSquare, rightCaptureSquare };
-			addLegalMove(l, move);
+			if (startSquare / 8 == (7 * color)) {
+				Move move = { startSquare, startSquare - 8 + 16 * color };
+				generatePromotionMoves(l, move, b);
+			}
+			else {
+				Move move = { startSquare, startSquare - 8 + 16 * color };
+				addLegalMove(l, move);
+			}
 		}
 	}
 }
@@ -388,7 +416,6 @@ void generateSlidingAttackMoves(int startSquare, MoveList* l, Board* b, int colo
 		}
 	}
 }
-
 
 /**
 * @brief 직선 움직임(룩)을 만들어 주는 함수
@@ -599,7 +626,7 @@ MoveList generateUncheckedMoves(Board* b, int* attackMap) {
 }
 
 
-int isCheckMate(Board* b) {
+int isMate(Board* b) {
 
 	MoveList legalMoveList = generateLegalMoves(b);
 	if (legalMoveList.size == 0) {
@@ -609,4 +636,26 @@ int isCheckMate(Board* b) {
 		return 1;
 	}
 	return 0;
+}
+
+
+void generatePromotionMoves(MoveList* l, Move move, Board* b) {
+	if (b->square[move.startSquare] == (White | Pawn)) {
+		if (move.targetSquare / 8 == 0) {
+			int whitePiece[4] = { White | Knight, White | Bishop, White | Rook, White | Queen };
+			for (int i = 0; i < 4; i++) {
+				Move promotionMove = { move.startSquare, move.targetSquare, whitePiece[i]};
+				addLegalMove(l, promotionMove);
+			}
+		}
+	}
+	else if (b->square[move.startSquare] == (Black | Pawn)) {
+		if (move.targetSquare / 8 == 7) {
+			int blackPiece[4] = { Black | Knight, Black | Bishop, Black | Rook, Black | Queen };
+			for (int i = 0; i < 4; i++) {
+				Move promotionMove = { move.startSquare, move.targetSquare, blackPiece[i] };
+				addLegalMove(l, promotionMove);
+			}
+		}
+	}
 }

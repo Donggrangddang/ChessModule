@@ -26,6 +26,8 @@ int isKnight(int piece);
 int isKing(int piece);
 
 int isPawn(int piece);
+
+int symbolToNumber(char symbol);
 #endif
 
 
